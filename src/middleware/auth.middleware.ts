@@ -1,6 +1,6 @@
 import { Response, NextFunction } from 'express';
 import jwt from 'jsonwebtoken';
-import { config } from '../config';
+import { getJwtAlgorithm, getJwtVerifyKey } from '../utils/jwt';
 import { AuthenticatedRequest, AuthenticatedUser } from '../types';
 
 export function authMiddleware(
@@ -18,7 +18,9 @@ export function authMiddleware(
   const token = authHeader.substring(7);
 
   try {
-    const decoded = jwt.verify(token, config.jwtSecret) as AuthenticatedUser;
+    const decoded = jwt.verify(token, getJwtVerifyKey(), {
+      algorithms: [getJwtAlgorithm()],
+    }) as AuthenticatedUser;
     req.user = decoded;
     next();
   } catch {

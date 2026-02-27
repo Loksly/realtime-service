@@ -5,6 +5,7 @@ import jwt from 'jsonwebtoken';
 import { config } from '../config';
 import { logger } from '../utils/logger';
 import { keyMatchesPattern } from '../utils/key-pattern';
+import { getJwtAlgorithm, getJwtVerifyKey } from '../utils/jwt';
 import { AuthenticatedUser } from '../types';
 
 export class SocketService {
@@ -36,7 +37,9 @@ export class SocketService {
       }
 
       try {
-        const decoded = jwt.verify(token, config.jwtSecret) as AuthenticatedUser;
+        const decoded = jwt.verify(token, getJwtVerifyKey(), {
+          algorithms: [getJwtAlgorithm()],
+        }) as AuthenticatedUser;
         socket.data.user = decoded;
         next();
       } catch {

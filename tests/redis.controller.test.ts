@@ -134,7 +134,7 @@ describe('getKeyByName controller', () => {
 
     await redisController.getKeyByName(makeReq({ params: { key: 'z' } }), res as Response);
 
-    expect(res.json).toHaveBeenCalledWith({ key: 'z', value: undefined, type: 'zset' });
+    expect(res.json).toHaveBeenCalledWith({ key: 'z', value: null, type: 'zset' });
   });
 
   it('returns 403 when key is disallowed', async () => {
