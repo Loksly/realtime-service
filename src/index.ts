@@ -3,7 +3,7 @@ import { createApp, pluginManager } from './app';
 import { config } from './config';
 import { SocketService } from './socket/socket.service';
 import { logger } from './utils/logger';
-import { closeRedisClient } from './redis/redis.client';
+import { closeRedisClient } from './modules/redis/redis.provider';
 
 async function main(): Promise<void> {
   const app = createApp();

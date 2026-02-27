@@ -1,17 +1,16 @@
-import { Router, Response } from 'express';
-import { authMiddleware } from '../middleware/auth.middleware';
-import { auditMiddleware } from '../middleware/audit.middleware';
-import { RedisService } from '../redis/redis.service';
-import { AuthenticatedRequest } from '../types';
+/**
+ * Redis Controller – HTTP layer.
+ * Parses requests, delegates to RedisService, and formats responses.
+ * Contains no business logic.
+ */
+import { Response } from 'express';
+import { AuthenticatedRequest } from '../../types';
+import { RedisService } from './redis.service';
 
-const router = Router();
 const redisService = new RedisService();
 
-router.use(authMiddleware);
-router.use(auditMiddleware);
-
 /** GET /api/v1/redis/keys  – list keys matching the optional ?pattern query param */
-router.get('/keys', async (req: AuthenticatedRequest, res: Response) => {
+export async function getKeys(req: AuthenticatedRequest, res: Response): Promise<void> {
   try {
     const { pattern } = req.query;
     const keys = await redisService.getKeys(pattern as string | undefined);
@@ -20,10 +19,10 @@ router.get('/keys', async (req: AuthenticatedRequest, res: Response) => {
     const message = error instanceof Error ? error.message : 'Unknown error';
     res.status(500).json({ error: message });
   }
-});
+}
 
-/** GET /api/v1/redis/keys/:key  – retrieve value of a specific key */
-router.get('/keys/:key', async (req: AuthenticatedRequest, res: Response) => {
+/** GET /api/v1/redis/keys/:key  – retrieve value and type of a specific key */
+export async function getKeyByName(req: AuthenticatedRequest, res: Response): Promise<void> {
   try {
     const { key } = req.params;
     const keyType = await redisService.type(key);
@@ -51,10 +50,10 @@ router.get('/keys/:key', async (req: AuthenticatedRequest, res: Response) => {
     const message = error instanceof Error ? error.message : 'Unknown error';
     res.status(message.includes('does not match') ? 403 : 500).json({ error: message });
   }
-});
+}
 
 /** GET /api/v1/redis/keys/:key/ttl  – TTL in seconds for a key */
-router.get('/keys/:key/ttl', async (req: AuthenticatedRequest, res: Response) => {
+export async function getKeyTtl(req: AuthenticatedRequest, res: Response): Promise<void> {
   try {
     const { key } = req.params;
     const ttl = await redisService.ttl(key);
@@ -63,25 +62,22 @@ router.get('/keys/:key/ttl', async (req: AuthenticatedRequest, res: Response) =>
     const message = error instanceof Error ? error.message : 'Unknown error';
     res.status(message.includes('does not match') ? 403 : 500).json({ error: message });
   }
-});
+}
 
 /** GET /api/v1/redis/keys/:key/hash/:field  – single hash field value */
-router.get(
-  '/keys/:key/hash/:field',
-  async (req: AuthenticatedRequest, res: Response) => {
-    try {
-      const { key, field } = req.params;
-      const value = await redisService.hget(key, field);
-      res.json({ key, field, value });
-    } catch (error) {
-      const message = error instanceof Error ? error.message : 'Unknown error';
-      res.status(message.includes('does not match') ? 403 : 500).json({ error: message });
-    }
+export async function getHashField(req: AuthenticatedRequest, res: Response): Promise<void> {
+  try {
+    const { key, field } = req.params;
+    const value = await redisService.hget(key, field);
+    res.json({ key, field, value });
+  } catch (error) {
+    const message = error instanceof Error ? error.message : 'Unknown error';
+    res.status(message.includes('does not match') ? 403 : 500).json({ error: message });
   }
-);
+}
 
 /** GET /api/v1/redis/data  – all key-value pairs matching the optional ?pattern */
-router.get('/data', async (req: AuthenticatedRequest, res: Response) => {
+export async function getData(req: AuthenticatedRequest, res: Response): Promise<void> {
   try {
     const { pattern } = req.query;
     const data = await redisService.getKeyValues(pattern as string | undefined);
@@ -90,6 +86,4 @@ router.get('/data', async (req: AuthenticatedRequest, res: Response) => {
     const message = error instanceof Error ? error.message : 'Unknown error';
     res.status(500).json({ error: message });
   }
-});
-
-export default router;
+}

@@ -1,8 +1,8 @@
 import express, { Application } from 'express';
 import { PluginManager } from './plugins/plugin-manager';
 import { loggerMiddleware } from './middleware/logger.middleware';
-import healthRoutes from './routes/health.routes';
-import redisRoutes from './routes/redis.routes';
+import healthRoutes from './modules/health/health.routes';
+import redisRoutes from './modules/redis/redis.routes';
 
 export const pluginManager = new PluginManager();
 

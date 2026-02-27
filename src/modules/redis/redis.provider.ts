@@ -1,6 +1,10 @@
+/**
+ * Redis Provider – infrastructure layer.
+ * Owns the single shared Redis connection. No business logic lives here.
+ */
 import Redis from 'ioredis';
-import { config } from '../config';
-import { logger } from '../utils/logger';
+import { config } from '../../config';
+import { logger } from '../../utils/logger';
 
 let client: Redis | null = null;
 

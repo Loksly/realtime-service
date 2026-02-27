@@ -1,8 +1,13 @@
+/**
+ * Redis Service – business-logic layer.
+ * Wraps the provider with key-pattern enforcement and typed read-only operations.
+ * No write commands are exposed.
+ */
 import { Redis } from 'ioredis';
-import { getRedisClient } from './redis.client';
-import { config } from '../config';
-import { keyMatchesPattern } from '../utils/key-pattern';
-import { RedisKeyValue } from '../types';
+import { getRedisClient } from './redis.provider';
+import { config } from '../../config';
+import { keyMatchesPattern } from '../../utils/key-pattern';
+import { RedisKeyValue } from '../../types';
 
 export class RedisService {
   private client: Redis;
@@ -19,7 +24,7 @@ export class RedisService {
     }
   }
 
-  /** Scan for all keys matching `searchPattern`, filtered by the allowed pattern. */
+  /** Scan Redis for keys matching `searchPattern`, restricted to the allowed pattern. */
   async getKeys(searchPattern?: string): Promise<string[]> {
     const scanPattern = searchPattern ?? this.keyPattern;
     const keys: string[] = [];

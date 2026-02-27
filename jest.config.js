@@ -13,7 +13,7 @@ module.exports = {
     '!src/index.ts'
   ],
   coverageReporters: ['text', 'lcov', 'html', 'clover'],
-  coverageThresholds: {
+  coverageThreshold: {
     global: {
       branches: 70,
       functions: 70,

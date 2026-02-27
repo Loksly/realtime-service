@@ -1,9 +1,11 @@
-import { Router, Request, Response } from 'express';
-import { getRedisClient } from '../redis/redis.client';
+/**
+ * Health Controller – HTTP layer.
+ * Verifies Redis connectivity and returns a structured status payload.
+ */
+import { Request, Response } from 'express';
+import { getRedisClient } from '../redis/redis.provider';
 
-const router = Router();
-
-router.get('/health', async (_req: Request, res: Response) => {
+export async function getHealth(_req: Request, res: Response): Promise<void> {
   try {
     const redis = getRedisClient();
     await redis.ping();
@@ -19,6 +21,4 @@ router.get('/health', async (_req: Request, res: Response) => {
       timestamp: new Date().toISOString(),
     });
   }
-});
-
-export default router;
+}
